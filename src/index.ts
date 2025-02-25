@@ -16,11 +16,11 @@ app.use(clerkMiddleware());
 const allowedOrigins = [
   'http://localhost:5173',        // Local development
   'http://localhost:3000',        // Alternative local port
-  'https://fed-storefront-frontend-mihindu.netlify.app/'  // Updated production frontend
+  'https://fed-storefront-frontend-mihindu.netlify.app'  // Updated production frontend
 ];
 
 app.use(cors({
-  origin: '*',
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
 }));
