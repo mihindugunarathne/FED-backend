@@ -8,6 +8,7 @@ import { orderRouter } from "./api/order";
 import { paymentsRouter } from "./api/payment";
 import { productRouter } from "./api/product";
 import { connectDB } from "./infrastructure/db";
+import mongoose from "mongoose";
 
 const app = express();
 app.use(express.json()); // For parsing JSON requests
@@ -20,8 +21,14 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: allowedOrigins,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  origin: function (origin, callback) {
+    console.log("Request origin:", origin);
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed'));
+    }
+  },
   credentials: true
 }));
 
@@ -33,5 +40,11 @@ app.use("/api/payments", paymentsRouter);
 app.use(globalErrorHandlingMiddleware);
 
 connectDB();
+
+// Add this to check MongoDB connection
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

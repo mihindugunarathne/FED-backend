@@ -26,10 +26,30 @@ export const createProduct = async (
   next: NextFunction
 ) => {
   try {
-    const productData = CreateProductDTO.parse(req.body);
-    const product = await Product.create(productData);
+    console.log("Received product data:", req.body);
+    const { name, description, price, image, category } = req.body;
+    
+    // Validate required fields
+    if (!name || !description || !price || !image || !category) {
+      console.log("Missing required fields:", { name, description, price, image, category });
+      return res.status(400).json({
+        message: "Missing required fields",
+        receivedData: req.body
+      });
+    }
+
+    const product = await Product.create({
+      name,
+      description,
+      price: Number(price),
+      image,
+      category
+    });
+
+    console.log("Created product:", product);
     res.status(201).json(product);
   } catch (error) {
+    console.error("Error creating product:", error);
     next(error);
   }
 };
@@ -89,4 +109,4 @@ export const updateProduct = async (
   } catch (error) {
     next(error);
   }
-}; 
+};
